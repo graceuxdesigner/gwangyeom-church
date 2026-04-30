@@ -179,10 +179,10 @@ export default function Home() {
             alt="광염교회"
             fill
             priority
-            className="object-cover object-left-top md:object-center"
+            className="object-cover object-[20%_30%] md:object-center"
           />
-          {/* lighter overlay so building is visible */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
+          {/* overlay: lighter at top so cross stays visible, darker mid for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/55 to-black/45 md:bg-gradient-to-r md:from-black/65 md:via-black/40 md:to-black/10" />
         </div>
         <div className="relative z-10 h-full flex items-center">
           <div className="max-w-7xl mx-auto px-6 w-full">
