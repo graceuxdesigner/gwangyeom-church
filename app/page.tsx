@@ -101,7 +101,7 @@ const QUICK_MENU = [
   { icon: Icons.bulletin, label: "이번 주 주보", href: "#bulletin", color: "bg-[#2d6a4f]" },
   { icon: Icons.clock, label: "예배 시간", href: "#worship", color: "bg-[#2d6a4f]" },
   { icon: Icons.pin, label: "오시는 길", href: "#location", color: "bg-[#2d6a4f]" },
-  { icon: Icons.play, label: "유튜브 라이브", href: "https://www.youtube.com", color: "bg-[#2d6a4f]" },
+  { icon: Icons.play, label: "유튜브 채널", href: "https://www.youtube.com/@%EA%B4%91%EC%97%BC%EA%B5%90%ED%9A%8C-%EC%98%A4%EC%A0%84%EB%8F%99", color: "bg-[#2d6a4f]" },
   { icon: Icons.give, label: "온라인 헌금", href: "#offering", color: "bg-[#2d6a4f]" },
 ];
 
@@ -375,8 +375,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Recent Worship Video */}
+      <section id="media" className="py-24 bg-white scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Media</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">최근 예배 영상</h2>
+            <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm bg-black aspect-video">
+              <iframe
+                src="https://www.youtube.com/embed/OK8iltTLrJk"
+                title="광염교회 최근 예배 영상"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+            <div className="text-center mt-6">
+              <a
+                href="https://www.youtube.com/@%EA%B4%91%EC%97%BC%EA%B5%90%ED%9A%8C-%EC%98%A4%EC%A0%84%EB%8F%99"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[#2d6a4f] font-semibold text-sm border-b-2 border-[#2d6a4f] pb-0.5 hover:text-[#1b4332] hover:border-[#1b4332] transition-colors"
+              >
+                광염교회 유튜브 채널에서 더보기 →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Location */}
-      <section id="location" className="py-24 bg-white scroll-mt-20">
+      <section id="location" className="py-24 bg-gray-50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Location</p>
@@ -455,11 +488,8 @@ export default function Home() {
             <div>
               <p className="text-white font-semibold mb-4 text-sm">SNS</p>
               <div className="flex gap-3">
-                <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="유튜브" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors p-2.5">
+                <a href="https://www.youtube.com/@%EA%B4%91%EC%97%BC%EA%B5%90%ED%9A%8C-%EC%98%A4%EC%A0%84%EB%8F%99" target="_blank" rel="noopener noreferrer" aria-label="유튜브" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors p-2.5">
                   <span className="text-white">{Icons.youtube}</span>
-                </a>
-                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="인스타그램" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors p-2.5">
-                  <span className="text-white">{Icons.instagram}</span>
                 </a>
               </div>
             </div>
