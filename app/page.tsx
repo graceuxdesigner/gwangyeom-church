@@ -174,7 +174,13 @@ export default function Home() {
       {/* Hero - building photo visible */}
       <section className="pt-[72px] relative h-screen min-h-[560px] max-h-[760px] overflow-hidden">
         <div className="absolute inset-0">
-          <Image src="/images/church-main.png" alt="광염교회" fill className="object-cover" priority />
+          <Image
+            src="/images/church-main.png"
+            alt="광염교회"
+            fill
+            priority
+            className="object-cover object-[center_85%] md:object-center"
+          />
           {/* lighter overlay so building is visible */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
         </div>
@@ -394,12 +400,13 @@ export default function Home() {
             </div>
             <div className="lg:col-span-3 rounded-xl overflow-hidden border border-gray-100 shadow-sm h-72 lg:h-auto">
               <iframe
-                src="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%9D%98%EC%99%95%EC%8B%9C%20%EC%9B%90%EA%B3%A8%EB%A1%9C%2023?c=15.00,0,0,0,dh"
+                src="https://maps.google.com/maps?q=%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%9D%98%EC%99%95%EC%8B%9C%20%EC%9B%90%EA%B3%A8%EB%A1%9C%2023&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 loading="lazy"
                 title="광염교회 위치"
+                allowFullScreen
               />
             </div>
           </div>
