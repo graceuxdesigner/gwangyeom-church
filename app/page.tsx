@@ -102,7 +102,7 @@ const QUICK_MENU = [
   { icon: Icons.clock, label: "예배 시간", href: "#worship", color: "bg-[#2d6a4f]" },
   { icon: Icons.pin, label: "오시는 길", href: "#location", color: "bg-[#2d6a4f]" },
   { icon: Icons.play, label: "유튜브 라이브", href: "https://www.youtube.com", color: "bg-[#2d6a4f]" },
-  { icon: Icons.give, label: "온라인 헌금", href: "#worship", color: "bg-[#2d6a4f]" },
+  { icon: Icons.give, label: "온라인 헌금", href: "#offering", color: "bg-[#2d6a4f]" },
 ];
 
 export default function Home() {
@@ -179,7 +179,7 @@ export default function Home() {
             alt="광염교회"
             fill
             priority
-            className="object-cover object-bottom md:object-center"
+            className="object-cover object-top md:object-center"
           />
           {/* lighter overlay so building is visible */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
@@ -208,7 +208,7 @@ export default function Home() {
       </section>
 
       {/* About */}
-      <section id="about" className="py-24 bg-white">
+      <section id="about" className="py-24 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -241,7 +241,7 @@ export default function Home() {
       </section>
 
       {/* Worship */}
-      <section id="worship" className="py-24 bg-gray-50">
+      <section id="worship" className="py-24 bg-gray-50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Worship</p>
@@ -283,7 +283,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-              <div className="bg-[#2d6a4f] rounded-xl overflow-hidden text-white">
+              <div id="offering" className="bg-[#2d6a4f] rounded-xl overflow-hidden text-white scroll-mt-24">
                 <div className="flex items-stretch">
                   <div className="bg-[#1b4332] px-5 flex items-center justify-center shrink-0">
                     <p className="font-bold text-sm leading-tight text-center">온라인<br />헌금안내</p>
@@ -305,7 +305,7 @@ export default function Home() {
       </section>
 
       {/* Staff */}
-      <section id="staff" className="py-24 bg-white">
+      <section id="staff" className="py-24 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Our Staff</p>
@@ -335,7 +335,7 @@ export default function Home() {
       </section>
 
       {/* This Week's Bulletin */}
-      <section id="bulletin" className="py-24 bg-gray-50">
+      <section id="bulletin" className="py-24 bg-gray-50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Bulletin</p>
@@ -365,7 +365,7 @@ export default function Home() {
       </section>
 
       {/* Location */}
-      <section id="location" className="py-24 bg-white">
+      <section id="location" className="py-24 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Location</p>
@@ -471,7 +471,20 @@ export default function Home() {
               href={item.href}
               target={item.href.startsWith("http") ? "_blank" : undefined}
               rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              onClick={() => setFabOpen(false)}
+              onClick={(e) => {
+                if (item.href.startsWith("#")) {
+                  e.preventDefault();
+                  const el = document.querySelector(item.href);
+                  setFabOpen(false);
+                  if (el) {
+                    requestAnimationFrame(() => {
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    });
+                  }
+                } else {
+                  setFabOpen(false);
+                }
+              }}
               className="flex items-center gap-3 group"
             >
               <span className="bg-white text-gray-800 text-sm font-medium px-4 py-2 rounded-full shadow-md whitespace-nowrap group-hover:bg-[#2d6a4f] group-hover:text-white transition-colors">
