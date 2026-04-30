@@ -313,14 +313,14 @@ export default function Home() {
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all">
+            <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
               <div className="aspect-[3/4] relative bg-gray-100">
                 <Image
                   src="/images/pastor.jpg"
                   alt="담임목사 온성진"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-top"
+                  className="object-cover object-[center_25%]"
                 />
               </div>
               <div className="p-6 text-center">
@@ -328,37 +328,18 @@ export default function Home() {
                 <p className="text-2xl font-bold text-gray-900">온성진</p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all flex flex-col">
-              <div className="aspect-[3/4] bg-[#d8f3dc] flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="w-16 h-16 text-[#40916c]">
-                  <circle cx="9" cy="8" r="3" />
-                  <circle cx="17" cy="8" r="2.5" />
-                  <path d="M3 19c0-3 2.5-5 6-5s6 2 6 5" strokeLinecap="round" />
-                  <path d="M14 19c.5-2 2-3.5 4-3.5s3 1 3.5 2.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <div className="p-6 text-center flex-1 flex flex-col justify-center">
-                <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">시무장로</p>
-                <div className="space-y-0.5">
-                  <p className="font-bold text-gray-900">이교호</p>
-                  <p className="font-bold text-gray-900">윤한용</p>
-                  <p className="font-bold text-gray-900">주병룡</p>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+              <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">시무장로</p>
+              <div className="space-y-1">
+                <p className="font-bold text-gray-900">이교호</p>
+                <p className="font-bold text-gray-900">윤한용</p>
+                <p className="font-bold text-gray-900">주병룡</p>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all flex flex-col">
-              <div className="aspect-[3/4] bg-[#d8f3dc] flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="w-16 h-16 text-[#40916c]">
-                  <path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M4 19l4 2 4-2 4 2 4-2M4 19h16" strokeLinejoin="round" strokeLinecap="round" />
-                  <line x1="9" y1="8" x2="15" y2="8" strokeLinecap="round" />
-                  <line x1="9" y1="12" x2="15" y2="12" strokeLinecap="round" />
-                </svg>
-              </div>
-              <div className="p-6 text-center flex-1 flex flex-col justify-center">
-                <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-2">부교역자</p>
-                <p className="text-xl font-bold text-gray-900">장충일</p>
-                <p className="text-gray-400 text-xs mt-1">교육부서</p>
-              </div>
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+              <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">부교역자</p>
+              <p className="text-xl font-bold text-gray-900">장충일</p>
+              <p className="text-gray-400 text-xs mt-1">교육부서</p>
             </div>
           </div>
         </div>
