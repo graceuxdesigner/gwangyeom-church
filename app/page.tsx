@@ -314,13 +314,13 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
-              <div className="aspect-[3/4] relative bg-gray-100">
+              <div className="aspect-square relative bg-gray-100">
                 <Image
                   src="/images/pastor.jpg"
                   alt="담임목사 온성진"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-[center_25%]"
+                  className="object-cover object-[center_22%]"
                 />
               </div>
               <div className="p-6 text-center">
