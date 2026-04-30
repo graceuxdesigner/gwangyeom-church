@@ -1,38 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const NAV_ITEMS = [
-  {
-    label: "교회소개",
-    href: "#about",
-    children: ["교회 비전", "핵심 가치", "담임목사 소개"],
-  },
-  {
-    label: "예배안내",
-    href: "#worship",
-    children: ["주일예배", "주간예배", "부서예배"],
-  },
+  { label: "교회소개", href: "#about", children: ["교회 비전", "핵심 가치", "담임목사 소개"] },
+  { label: "예배안내", href: "#worship", children: ["주일예배", "주간예배", "부서예배"] },
   { label: "섬기는 분들", href: "#staff", children: [] },
   { label: "오시는 길", href: "#location", children: [] },
-];
-
-const HERO_SLIDES = [
-  {
-    bg: "from-[#1b4332] to-[#2d6a4f]",
-    title: "다음세대의 비전을\n믿음으로 바라보라",
-    sub: "세상의 빛과 소금이 되는 광염교회",
-  },
-  {
-    bg: "from-[#2d6a4f] to-[#40916c]",
-    title: "복음의 능력을\n가진 교회",
-    sub: "하나님의 말씀과 성령의 능력으로",
-  },
-  {
-    bg: "from-[#40916c] to-[#74c69d]",
-    title: "사랑으로\n하나되는 교회",
-    sub: "이 땅의 영혼을 구원하는 생명공동체",
-  },
 ];
 
 const QUICK_LINKS = [
@@ -58,32 +33,29 @@ const MINISTRY_SCHEDULE = [
   { name: "목장모임", time: "각 목장별" },
 ];
 
-const NOTICES = [
-  { date: "2025.04.20", title: "2025년 부활절 연합예배 안내", category: "공지" },
-  { date: "2025.04.14", title: "목장모임 일정 변경 안내", category: "공지" },
-  { date: "2025.04.07", title: "교회 봄 대청소 자원봉사 모집", category: "행사" },
-  { date: "2025.03.30", title: "새가족 환영식 안내", category: "행사" },
-  { date: "2025.03.23", title: "청년부 수련회 신청 안내", category: "청년" },
+const CORE_VALUES = [
+  { num: "01", title: "복음의 능력을 가진 교회", desc: "성령의 능력으로 복음을 전하는" },
+  { num: "02", title: "다음세대를 세우는 교회", desc: "믿음의 다음세대를 세워가는" },
+  { num: "03", title: "사랑으로 하나되는 교회", desc: "그리스도의 사랑으로 하나되는" },
+];
+
+const BULLETINS = [
+  { date: "2025.04.27", title: "주일 주보 (4월 4주차)" },
+  { date: "2025.04.20", title: "주일 주보 (4월 3주차)" },
+  { date: "2025.04.13", title: "주일 주보 (4월 2주차)" },
+  { date: "2025.04.06", title: "주일 주보 (4월 1주차)" },
 ];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const [slide, setSlide] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => setSlide((s) => (s + 1) % HERO_SLIDES.length), 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const current = HERO_SLIDES[slide];
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
@@ -97,11 +69,11 @@ export default function Home() {
           <div className="flex items-center justify-between h-18 py-3">
             {/* Logo */}
             <a href="#" className="flex items-center gap-3 shrink-0">
-              <div className="w-10 h-10 bg-[#2d6a4f] rounded-sm flex items-center justify-center">
-                <span className="text-white font-bold text-lg">光</span>
+              <div className="w-11 h-11 relative shrink-0">
+                <Image src="/images/logo.jpeg" alt="광염교회 로고" fill className="object-contain" priority />
               </div>
               <div>
-                <p className="text-[10px] text-gray-400 leading-none mb-0.5">대한예수교장로회 합동</p>
+                <p className="text-[10px] text-gray-400 leading-none mb-1">대한예수교장로회</p>
                 <p className="font-bold text-[#1b4332] text-xl leading-none">광염교회</p>
               </div>
             </a>
@@ -115,20 +87,13 @@ export default function Home() {
                   onMouseEnter={() => setActiveDropdown(i)}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  <a
-                    href={item.href}
-                    className="px-5 py-5 text-gray-700 hover:text-[#2d6a4f] font-medium text-sm transition-colors inline-block"
-                  >
+                  <a href={item.href} className="px-5 py-5 text-gray-700 hover:text-[#2d6a4f] font-medium text-sm transition-colors inline-block">
                     {item.label}
                   </a>
                   {item.children.length > 0 && activeDropdown === i && (
                     <div className="absolute top-full left-0 bg-white shadow-lg border border-gray-100 rounded-b-lg min-w-36 z-50">
                       {item.children.map((child, j) => (
-                        <a
-                          key={j}
-                          href={item.href}
-                          className="block px-5 py-3 text-sm text-gray-600 hover:text-[#2d6a4f] hover:bg-[#f0faf3] transition-colors"
-                        >
+                        <a key={j} href={item.href} className="block px-5 py-3 text-sm text-gray-600 hover:text-[#2d6a4f] hover:bg-[#f0faf3] transition-colors">
                           {child}
                         </a>
                       ))}
@@ -155,12 +120,7 @@ export default function Home() {
         {menuOpen && (
           <div className="lg:hidden border-t border-gray-100 bg-white px-6 py-4">
             {NAV_ITEMS.map((item, i) => (
-              <a
-                key={i}
-                href={item.href}
-                className="block py-3 text-gray-700 hover:text-[#2d6a4f] font-medium border-b border-gray-50 last:border-0"
-                onClick={() => setMenuOpen(false)}
-              >
+              <a key={i} href={item.href} className="block py-3 text-gray-700 hover:text-[#2d6a4f] font-medium border-b border-gray-50 last:border-0" onClick={() => setMenuOpen(false)}>
                 {item.label}
               </a>
             ))}
@@ -168,10 +128,12 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero Slider */}
+      {/* Hero - single static */}
       <section className="pt-[72px] relative h-screen min-h-[500px] max-h-[700px] overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-br ${current.bg} transition-all duration-1000`} />
-        {/* Pattern overlay */}
+        <div className="absolute inset-0">
+          <Image src="/images/church-main.png" alt="광염교회" fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1b4332]/85 via-[#2d6a4f]/80 to-[#1b4332]/85" />
+        </div>
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
             backgroundImage: "repeating-linear-gradient(45deg, white 0, white 1px, transparent 0, transparent 50%)",
@@ -182,38 +144,22 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6 w-full">
             <div className="max-w-2xl">
               <p className="text-[#74c69d] text-sm font-semibold tracking-[0.2em] uppercase mb-4">
-                광염교회 · Gwangyeom Church
+                광염교회 · GWANGYEOM CHURCH
               </p>
-              <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 whitespace-pre-line">
-                {current.title}
+              <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+                다음세대의 비전을<br />믿음으로 바라보라
               </h1>
-              <p className="text-[#b7e4c7] text-lg mb-10">{current.sub}</p>
+              <p className="text-[#b7e4c7] text-lg mb-10">세상의 빛과 소금이 되는 광염교회</p>
               <div className="flex flex-wrap gap-3">
-                <a
-                  href="#worship"
-                  className="bg-white text-[#2d6a4f] px-7 py-3 rounded font-semibold text-sm hover:bg-[#d8f3dc] transition-colors"
-                >
+                <a href="#worship" className="bg-white text-[#2d6a4f] px-7 py-3 rounded font-semibold text-sm hover:bg-[#d8f3dc] transition-colors">
                   예배 안내
                 </a>
-                <a
-                  href="#about"
-                  className="border border-white/50 text-white px-7 py-3 rounded font-semibold text-sm hover:bg-white/10 transition-colors"
-                >
+                <a href="#about" className="border border-white/50 text-white px-7 py-3 rounded font-semibold text-sm hover:bg-white/10 transition-colors">
                   교회 소개
                 </a>
               </div>
             </div>
           </div>
-        </div>
-        {/* Slide indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {HERO_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setSlide(i)}
-              className={`h-1.5 rounded-full transition-all ${i === slide ? "w-8 bg-white" : "w-1.5 bg-white/40"}`}
-            />
-          ))}
         </div>
       </section>
 
@@ -246,9 +192,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">About Us</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                세상의 빛과 소금이<br />되는 교회
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">교회 소개</h2>
               <div className="w-12 h-1 bg-[#40916c] mb-8" />
               <p className="text-gray-600 leading-relaxed mb-5">
                 1998년 11월에 건축되어, 지금 제2성전 시대를 맞이하고 있습니다. 우리는 하나님의 말씀과 성령의 능력으로 예수의 제자가 되어, 이 땅의 영혼을 구원하는 세계비전을 향해 나아가는 생명공동체입니다.
@@ -256,20 +200,12 @@ export default function Home() {
               <p className="text-gray-600 leading-relaxed mb-8">
                 성경적인 교회의 본질에 충실한 건강한 교회가 되어 하나님을 기쁘시게 하고, 세상의 빛과 소금이 되어 세상을 구원하고 축복하는 거룩한 공동체가 되는 것입니다.
               </p>
-              <a
-                href="#staff"
-                className="inline-flex items-center gap-2 text-[#2d6a4f] font-semibold text-sm border-b-2 border-[#2d6a4f] pb-0.5 hover:text-[#1b4332] hover:border-[#1b4332] transition-colors"
-              >
+              <a href="#staff" className="inline-flex items-center gap-2 text-[#2d6a4f] font-semibold text-sm border-b-2 border-[#2d6a4f] pb-0.5 hover:text-[#1b4332] hover:border-[#1b4332] transition-colors">
                 섬기는 분들 보기 →
               </a>
             </div>
             <div className="space-y-4">
-              {[
-                { num: "01", title: "세상의 빛과 소금이 되는 교회", desc: "마태복음 5:13-14의 말씀을 따라" },
-                { num: "02", title: "복음의 능력을 가진 교회", desc: "성령의 능력으로 복음을 전하는" },
-                { num: "03", title: "다음세대를 세우는 교회", desc: "믿음의 다음세대를 세워가는" },
-                { num: "04", title: "사랑으로 하나되는 교회", desc: "그리스도의 사랑으로 하나되는" },
-              ].map((v, i) => (
+              {CORE_VALUES.map((v, i) => (
                 <div key={i} className="flex items-start gap-5 p-5 border border-gray-100 rounded-lg hover:border-[#b7e4c7] hover:bg-[#f9fefb] transition-all group">
                   <span className="text-2xl font-bold text-[#b7e4c7] group-hover:text-[#40916c] transition-colors shrink-0">{v.num}</span>
                   <div>
@@ -315,7 +251,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            {/* Ministry */}
+            {/* Ministry + 온라인 헌금 안내 */}
             <div className="space-y-4">
               <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
                 <div className="flex items-center gap-3 px-7 py-5 border-b border-gray-100">
@@ -331,44 +267,60 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-              <div className="bg-[#2d6a4f] rounded-xl p-7 text-white">
-                <p className="text-[#74c69d] text-xs font-semibold tracking-widest uppercase mb-2">Vision</p>
-                <p className="font-bold text-xl leading-snug">
-                  다음세대의 비전을<br />믿음으로 바라보라
-                </p>
-                <p className="text-white/60 text-sm mt-3">경기도 의왕시 원골로 23</p>
+              {/* 온라인 헌금 안내 */}
+              <div className="bg-[#2d6a4f] rounded-xl overflow-hidden text-white">
+                <div className="flex items-stretch">
+                  <div className="bg-[#1b4332] px-5 flex items-center justify-center shrink-0">
+                    <p className="font-bold text-sm leading-tight text-center">온라인<br />헌금안내</p>
+                  </div>
+                  <div className="px-6 py-5 flex-1">
+                    <p className="font-bold text-base mb-1">농협 351-1149-3941-23</p>
+                    <p className="text-[#b7e4c7] text-xs mb-3">예금주: 광염교회(대한예수교장로회)</p>
+                    <p className="text-white/90 text-xs leading-relaxed border-t border-white/15 pt-3">
+                      헌금시 입금자명과 헌금명을 꼭 명기해주세요. <br />
+                      <span className="font-semibold">이름+헌금종류</span>{" "}
+                      <span className="text-white/60">(예: 홍OO 십일조, 홍OO 선교헌금)</span>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Notices + YouTube */}
+      {/* 교회 주보 + Sermon Video */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Notices */}
+            {/* 교회 주보 (포토형) */}
             <div>
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-2">Notice</p>
-                  <h2 className="text-2xl font-bold text-gray-900">공지사항</h2>
+                  <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-2">Bulletin</p>
+                  <h2 className="text-2xl font-bold text-gray-900">교회 주보</h2>
                 </div>
                 <a href="#" className="text-sm text-gray-400 hover:text-[#2d6a4f] transition-colors">더보기 →</a>
               </div>
-              <div className="divide-y divide-gray-100">
-                {NOTICES.map((n, i) => (
-                  <div key={i} className="flex items-start gap-4 py-4 hover:bg-gray-50 px-2 -mx-2 rounded transition-colors cursor-pointer group">
-                    <span className={`text-xs px-2 py-0.5 rounded font-medium shrink-0 mt-0.5 ${
-                      n.category === "공지" ? "bg-[#d8f3dc] text-[#2d6a4f]" :
-                      n.category === "행사" ? "bg-orange-50 text-orange-600" :
-                      "bg-blue-50 text-blue-600"
-                    }`}>{n.category}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-800 group-hover:text-[#2d6a4f] transition-colors truncate">{n.title}</p>
+              <div className="grid grid-cols-2 gap-4">
+                {BULLETINS.map((b, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="group block rounded-lg overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all"
+                  >
+                    <div className="aspect-[3/4] bg-gradient-to-br from-[#d8f3dc] via-[#b7e4c7] to-[#74c69d] flex flex-col items-center justify-center text-[#1b4332] relative overflow-hidden">
+                      <div className="absolute top-3 left-3 right-3 h-0.5 bg-[#1b4332]/20" />
+                      <p className="text-xs font-bold tracking-widest uppercase mb-2">광염교회</p>
+                      <p className="font-bold text-lg">주보</p>
+                      <p className="text-xs mt-1">{b.date}</p>
+                      <div className="absolute bottom-3 left-3 right-3 h-0.5 bg-[#1b4332]/20" />
                     </div>
-                    <span className="text-xs text-gray-400 shrink-0">{n.date}</span>
-                  </div>
+                    <div className="px-4 py-3 bg-white">
+                      <p className="text-xs text-gray-400 mb-1">{b.date}</p>
+                      <p className="font-medium text-sm text-gray-800 group-hover:text-[#2d6a4f] transition-colors truncate">{b.title}</p>
+                    </div>
+                  </a>
                 ))}
               </div>
             </div>
@@ -380,12 +332,7 @@ export default function Home() {
                   <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-2">Media</p>
                   <h2 className="text-2xl font-bold text-gray-900">설교 영상</h2>
                 </div>
-                <a
-                  href="https://www.youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-gray-400 hover:text-[#2d6a4f] transition-colors"
-                >
+                <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-[#2d6a4f] transition-colors">
                   유튜브 채널 →
                 </a>
               </div>
@@ -452,11 +399,21 @@ export default function Home() {
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
           </div>
           <div className="grid lg:grid-cols-5 gap-8">
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4">
               <div className="bg-gray-50 rounded-xl p-7 border border-gray-100">
                 <p className="text-xs font-bold text-[#40916c] tracking-widest uppercase mb-4">주소</p>
                 <p className="font-bold text-gray-900 text-lg mb-1">광염교회</p>
-                <p className="text-gray-600 text-sm leading-relaxed">경기도 의왕시 원골로 23</p>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">(16050) 경기도 의왕시 원골로 23</p>
+                <div className="border-t border-gray-200 pt-4 space-y-1.5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-[#40916c] w-10">TEL</span>
+                    <a href="tel:031-452-4453" className="text-sm text-gray-700 font-medium hover:text-[#2d6a4f]">(031) 452-4453</a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-[#40916c] w-10">FAX</span>
+                    <span className="text-sm text-gray-700 font-medium">(031) 458-9106</span>
+                  </div>
+                </div>
               </div>
               <a
                 href="https://map.naver.com/v5/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%9D%98%EC%99%95%EC%8B%9C%20%EC%9B%90%EA%B3%A8%EB%A1%9C%2023"
@@ -489,15 +446,16 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-10 pb-10 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 bg-[#2d6a4f] rounded flex items-center justify-center">
-                  <span className="text-white font-bold">光</span>
+                <div className="w-10 h-10 relative shrink-0 bg-white rounded p-1">
+                  <Image src="/images/logo.jpeg" alt="광염교회 로고" fill className="object-contain p-0.5" />
                 </div>
                 <p className="font-bold text-white text-lg">광염교회</p>
               </div>
               <p className="text-sm leading-relaxed text-gray-500">
-                대한예수교장로회 합동<br />
+                대한예수교장로회<br />
                 담임목사 온성진<br />
-                경기도 의왕시 원골로 23
+                (16050) 경기도 의왕시 원골로 23<br />
+                TEL (031) 452-4453 · FAX (031) 458-9106
               </p>
             </div>
             <div>
@@ -513,22 +471,12 @@ export default function Home() {
             <div>
               <p className="text-white font-semibold mb-4 text-sm">SNS</p>
               <div className="flex gap-3">
-                <a
-                  href="https://www.youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                >
+                <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
                 </a>
-                <a
-                  href="https://www.instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
-                >
+                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                   </svg>
