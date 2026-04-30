@@ -173,13 +173,13 @@ export default function Home() {
 
       {/* Hero - building photo visible */}
       <section className="pt-[72px] relative h-screen min-h-[560px] max-h-[760px] overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="absolute inset-x-0 top-[72px] bottom-0">
           <Image
             src="/images/church-main.png"
             alt="광염교회"
             fill
             priority
-            className="object-cover object-[20%_30%] md:object-center"
+            className="object-cover object-[20%_top] md:object-center"
           />
           {/* overlay: lighter at top so cross stays visible, darker mid for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/55 to-black/45 md:bg-gradient-to-r md:from-black/65 md:via-black/40 md:to-black/10" />
