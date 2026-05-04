@@ -98,16 +98,14 @@ const Icons = {
 };
 
 const QUICK_MENU = [
-  { icon: Icons.bulletin, label: "이번 주 주보", href: "#bulletin", color: "bg-[#2d6a4f]" },
-  { icon: Icons.clock, label: "예배 시간", href: "#worship", color: "bg-[#2d6a4f]" },
-  { icon: Icons.pin, label: "오시는 길", href: "#location", color: "bg-[#2d6a4f]" },
-  { icon: Icons.play, label: "유튜브 채널", href: "https://www.youtube.com/@%EA%B4%91%EC%97%BC%EA%B5%90%ED%9A%8C-%EC%98%A4%EC%A0%84%EB%8F%99", color: "bg-[#2d6a4f]" },
-  { icon: Icons.give, label: "온라인 헌금", href: "#offering", color: "bg-[#2d6a4f]" },
+  { icon: Icons.bulletin, label: "주보", href: "#bulletin" },
+  { icon: Icons.clock, label: "예배시간", href: "#worship" },
+  { icon: Icons.play, label: "유튜브", href: "https://www.youtube.com/@%EA%B4%91%EC%97%BC%EA%B5%90%ED%9A%8C-%EC%98%A4%EC%A0%84%EB%8F%99" },
+  { icon: Icons.pin, label: "오시는 길", href: "#location" },
 ];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [fabOpen, setFabOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -498,65 +496,39 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Floating Quick Menu (FAB) */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-        {/* expanded items */}
-        <div
-          className={`flex flex-col items-end gap-2.5 transition-all duration-300 ${
-            fabOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
-          }`}
-        >
-          {QUICK_MENU.map((item, i) => (
-            <a
-              key={i}
-              href={item.href}
-              target={item.href.startsWith("http") ? "_blank" : undefined}
-              rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              onClick={(e) => {
-                if (item.href.startsWith("#")) {
-                  e.preventDefault();
-                  const el = document.querySelector(item.href);
-                  setFabOpen(false);
-                  if (el) {
-                    requestAnimationFrame(() => {
-                      el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    });
+      {/* Sticky bottom bar — elderly-friendly quick access */}
+      <nav
+        aria-label="빠른 메뉴"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-[#1b4332] border-t-2 border-[#2d6a4f] shadow-[0_-4px_16px_rgba(0,0,0,0.15)]"
+      >
+        <div className="max-w-7xl mx-auto grid grid-cols-4">
+          {QUICK_MENU.map((item, i) => {
+            const isExternal = item.href.startsWith("http");
+            return (
+              <a
+                key={i}
+                href={item.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                onClick={(e) => {
+                  if (!isExternal) {
+                    e.preventDefault();
+                    const el = document.querySelector(item.href);
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   }
-                } else {
-                  setFabOpen(false);
-                }
-              }}
-              className="flex items-center gap-3 group"
-            >
-              <span className="bg-white text-gray-800 text-sm font-medium px-4 py-2 rounded-full shadow-md whitespace-nowrap group-hover:bg-[#2d6a4f] group-hover:text-white transition-colors">
-                {item.label}
-              </span>
-              <span className={`w-12 h-12 ${item.color} text-white rounded-full shadow-lg flex items-center justify-center p-3 group-hover:scale-110 transition-transform`}>
-                {item.icon}
-              </span>
-            </a>
-          ))}
+                }}
+                className="flex flex-col items-center justify-center gap-1.5 py-3 min-h-[68px] text-white hover:bg-[#2d6a4f] active:bg-[#40916c] transition-colors border-r border-white/10 last:border-r-0"
+              >
+                <span className="w-7 h-7">{item.icon}</span>
+                <span className="text-[13px] font-semibold leading-none">{item.label}</span>
+              </a>
+            );
+          })}
         </div>
+      </nav>
 
-        {/* main FAB button */}
-        <button
-          onClick={() => setFabOpen(!fabOpen)}
-          aria-label={fabOpen ? "퀵메뉴 닫기" : "퀵메뉴 열기"}
-          className="w-14 h-14 bg-[#1b4332] text-white rounded-full shadow-xl flex items-center justify-center p-4 hover:bg-[#2d6a4f] hover:scale-105 transition-all"
-        >
-          <div className={`transition-transform duration-300 ${fabOpen ? "rotate-45" : ""}`}>
-            {Icons.plus}
-          </div>
-        </button>
-      </div>
-
-      {/* FAB backdrop */}
-      {fabOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[2px] transition-opacity"
-          onClick={() => setFabOpen(false)}
-        />
-      )}
+      {/* spacer so footer/content not hidden by sticky bar */}
+      <div className="h-[68px]" aria-hidden="true" />
     </div>
   );
 }
