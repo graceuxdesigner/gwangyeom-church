@@ -41,3 +41,17 @@ export async function deleteFile(path: string, message: string) {
 export function utf8ToBase64(s: string) {
   return Buffer.from(s, "utf-8").toString("base64");
 }
+
+// Trigger Vercel rebuild after content/file changes.
+// Requires VERCEL_DEPLOY_HOOK_URL env var.
+export async function triggerVercelRebuild(): Promise<{ ok: boolean; reason?: string }> {
+  const url = process.env.VERCEL_DEPLOY_HOOK_URL;
+  if (!url) return { ok: false, reason: "VERCEL_DEPLOY_HOOK_URL not set" };
+  try {
+    const res = await fetch(url, { method: "POST" });
+    if (!res.ok) return { ok: false, reason: `hook returned ${res.status}` };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : "hook call failed" };
+  }
+}

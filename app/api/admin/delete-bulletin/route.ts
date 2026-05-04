@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { commitFile, deleteFile, utf8ToBase64 } from "@/lib/github";
+import { commitFile, deleteFile, triggerVercelRebuild, utf8ToBase64 } from "@/lib/github";
 import { bulletinsList } from "@/lib/content";
 
 export async function POST(req: Request) {
@@ -22,7 +22,8 @@ export async function POST(req: Request) {
       contentBase64: utf8ToBase64(JSON.stringify(updated, null, 2) + "\n"),
       message: `admin: unregister bulletin ${target.date}`,
     });
-    return NextResponse.json({ ok: true });
+    const trig = await triggerVercelRebuild();
+    return NextResponse.json({ ok: true, rebuild: trig });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "delete failed";
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });

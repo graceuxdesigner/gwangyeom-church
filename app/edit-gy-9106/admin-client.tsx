@@ -151,7 +151,8 @@ function TextEditor({ initial }: { initial: SiteContent }) {
     });
     setBusy(false);
     if (r.ok) {
-      setMsg("✅ 저장 완료. 약 30초 뒤 사이트에 반영됩니다.");
+      const j = await r.json().catch(() => ({}));
+      setMsg(`✅ 저장 완료. ${rebuildNote(j.rebuild)}`);
     } else {
       const j = await r.json().catch(() => ({}));
       setMsg(`⚠️ 저장 실패: ${j.error ?? "unknown"}`);
@@ -253,31 +254,37 @@ function TextEditor({ initial }: { initial: SiteContent }) {
   );
 }
 
+function rebuildNote(rebuild: { ok: boolean; reason?: string } | undefined) {
+  if (!rebuild) return "약 1~2분 뒤 사이트에 반영됩니다.";
+  if (rebuild.ok) return "약 1~2분 뒤 사이트에 자동 반영됩니다.";
+  return `⚠️ 자동 빌드 미설정 (${rebuild.reason ?? "no hook"}). Vercel 대시보드에서 Deploy Hook 등록 필요.`;
+}
+
 function BulletinManager({ initial }: { initial: Bulletin[] }) {
   const [items, setItems] = useState<Bulletin[]>(initial);
   const [date, setDate] = useState("");
   const [title, setTitle] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
   async function upload(e: React.FormEvent) {
     e.preventDefault();
-    if (!file || !date || !title) return;
+    if (files.length === 0 || !date || !title) return;
     setBusy(true);
     setMsg("");
     const fd = new FormData();
-    fd.append("file", file);
+    files.forEach((f) => fd.append("file", f));
     fd.append("date", date);
     fd.append("title", title);
     const r = await fetch("/api/admin/upload-bulletin", { method: "POST", body: fd });
     setBusy(false);
     if (r.ok) {
       const j = await r.json();
-      setItems([j.item, ...items]);
-      setDate(""); setTitle(""); setFile(null);
+      setItems([...j.items, ...items]);
+      setDate(""); setTitle(""); setFiles([]);
       (document.getElementById("bulletin-file") as HTMLInputElement).value = "";
-      setMsg("✅ 업로드 완료. 약 30초 뒤 사이트에 반영됩니다.");
+      setMsg(`✅ ${j.items.length}개 업로드 완료. ${rebuildNote(j.rebuild)}`);
     } else {
       const j = await r.json().catch(() => ({}));
       setMsg(`⚠️ 업로드 실패: ${j.error ?? "unknown"}`);
@@ -292,8 +299,9 @@ function BulletinManager({ initial }: { initial: Bulletin[] }) {
       body: JSON.stringify({ id }),
     });
     if (r.ok) {
+      const j = await r.json().catch(() => ({}));
       setItems(items.filter((b) => b.id !== id));
-      setMsg("✅ 삭제 완료. 약 30초 뒤 사이트에 반영됩니다.");
+      setMsg(`✅ 삭제 완료. ${rebuildNote(j.rebuild)}`);
     } else {
       const j = await r.json().catch(() => ({}));
       setMsg(`⚠️ 삭제 실패: ${j.error ?? "unknown"}`);
@@ -307,22 +315,26 @@ function BulletinManager({ initial }: { initial: Bulletin[] }) {
           <Field label="주일 날짜 (예: 2025.04.27)" value={date} onChange={setDate} />
           <Field label="주보 제목 (예: 4월 4주차 주보)" value={title} onChange={setTitle} />
           <label className="block">
-            <span className="text-xs text-gray-500 font-medium mb-1 block">파일 (PDF/JPG/PNG)</span>
+            <span className="text-xs text-gray-500 font-medium mb-1 block">파일 (여러 장 선택 가능)</span>
             <input
               id="bulletin-file"
               type="file"
+              multiple
               accept=".pdf,.jpg,.jpeg,.png,.webp"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
               className="w-full text-sm py-1.5"
             />
+            {files.length > 0 && (
+              <span className="text-xs text-[#2d6a4f] font-medium mt-1 block">{files.length}개 파일 선택됨</span>
+            )}
           </label>
         </form>
         <button
           onClick={(e) => upload(e as unknown as React.FormEvent)}
-          disabled={busy || !file || !date || !title}
+          disabled={busy || files.length === 0 || !date || !title}
           className="mt-3 bg-[#2d6a4f] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1b4332] disabled:opacity-50 transition-colors"
         >
-          {busy ? "업로드 중..." : "📤 업로드"}
+          {busy ? "업로드 중..." : `📤 ${files.length || ""}개 업로드`}
         </button>
         {msg && <p className={`text-sm mt-3 ${msg.startsWith("✅") ? "text-[#2d6a4f]" : "text-red-600"}`}>{msg}</p>}
       </Section>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { commitFile, utf8ToBase64 } from "@/lib/github";
+import { commitFile, triggerVercelRebuild, utf8ToBase64 } from "@/lib/github";
 
 export async function POST(req: Request) {
   if (!(await isAuthenticated())) {
@@ -13,7 +13,8 @@ export async function POST(req: Request) {
       contentBase64: utf8ToBase64(JSON.stringify(body, null, 2) + "\n"),
       message: "admin: update content",
     });
-    return NextResponse.json({ ok: true });
+    const trig = await triggerVercelRebuild();
+    return NextResponse.json({ ok: true, rebuild: trig });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "save failed";
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
