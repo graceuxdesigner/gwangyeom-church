@@ -59,8 +59,27 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const recentBulletins = bulletins.slice(0, 2);
+  // Group latest bulletins: take all items sharing the same date as the most recent upload,
+  // sort by id ascending so page 1 (앞) is first, page 2 (뒤) follows.
   const latestBulletin = bulletins[0];
+  const latestSet = latestBulletin
+    ? bulletins
+        .filter((b) => b.date === latestBulletin.date)
+        .sort((a, b) => a.id.localeCompare(b.id))
+    : [];
+
+  function downloadAll() {
+    latestSet.forEach((b, i) => {
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = b.url;
+        a.download = b.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }, i * 250);
+    });
+  }
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
@@ -225,14 +244,14 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all flex flex-col justify-center">
               <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-gray-100 ring-2 ring-[#b7e4c7] relative">
                 <Image src="/images/pastor.jpg" alt={`담임목사 ${content.staff.pastor_name}`} fill sizes="80px" className="object-cover object-[center_35%] scale-[1.8]" />
               </div>
               <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-2">담임목사</p>
               <p className="text-2xl font-bold text-gray-900">{content.staff.pastor_name}</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all flex flex-col justify-center">
               <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">시무장로</p>
               <div className="space-y-1">
                 {content.staff.elders.map((name) => (
@@ -240,7 +259,7 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
                 ))}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all flex flex-col justify-center">
               <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">부교역자</p>
               {content.staff.ministers.map((m) => (
                 <div key={m.name}>
@@ -262,43 +281,61 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
             {latestBulletin && <p className="text-sm text-gray-500 mt-4">{latestBulletin.date}</p>}
           </div>
-          {recentBulletins.length === 0 ? (
+          {latestSet.length === 0 ? (
             <div className="max-w-2xl mx-auto bg-white rounded-xl border border-gray-100 p-12 text-center">
               <div className="w-12 h-12 mx-auto mb-3 text-gray-300">{Icons.bulletin}</div>
               <p className="text-gray-500">아직 등록된 주보가 없습니다.</p>
             </div>
           ) : (
-            <div className={`grid ${recentBulletins.length > 1 ? "md:grid-cols-2" : ""} gap-6 max-w-4xl mx-auto`}>
-              {recentBulletins.map((b) => {
-                const isImage = /\.(jpe?g|png|webp)$/i.test(b.filename);
-                return (
-                  <div key={b.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-lg transition-all group">
-                    <div className="aspect-[3/4] bg-gradient-to-br from-[#d8f3dc] via-[#b7e4c7] to-[#74c69d] relative">
-                      {isImage ? (
-                        <Image src={b.url} alt={b.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
-                      ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-[#1b4332]">
-                          <p className="text-xs font-bold tracking-widest uppercase mb-2">광염교회 주보</p>
-                          <p className="text-3xl font-bold mb-1">{b.date}</p>
-                          <p className="text-sm">PDF</p>
+            <div className="max-w-3xl mx-auto">
+              {latestSet.length > 1 && (
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={downloadAll}
+                    className="inline-flex items-center gap-2 bg-[#2d6a4f] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1b4332] transition-colors"
+                  >
+                    <span className="w-4 h-4">{Icons.download}</span>
+                    전체 다운로드 ({latestSet.length}장)
+                  </button>
+                </div>
+              )}
+              <div className="space-y-6">
+                {latestSet.map((b, i) => {
+                  const isImage = /\.(jpe?g|png|webp)$/i.test(b.filename);
+                  const sideLabel = latestSet.length > 1 ? (i === 0 ? "앞면" : i === 1 ? "뒷면" : `${i + 1}장`) : null;
+                  return (
+                    <div key={b.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all">
+                      {/* A4 가로비 (297:210) */}
+                      <div className="aspect-[297/210] bg-gradient-to-br from-[#d8f3dc] via-[#b7e4c7] to-[#74c69d] relative">
+                        {isImage ? (
+                          <Image src={b.url} alt={b.title} fill className="object-contain bg-white" sizes="(max-width: 768px) 100vw, 800px" />
+                        ) : (
+                          <iframe src={`${b.url}#toolbar=0&navpanes=0`} className="w-full h-full" title={b.title} />
+                        )}
+                        {sideLabel && (
+                          <span className="absolute top-3 left-3 bg-[#1b4332] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                            {sideLabel}
+                          </span>
+                        )}
+                      </div>
+                      <div className="px-6 py-4 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-gray-900 truncate">{b.title}</p>
+                          <p className="text-xs text-gray-500">{b.date}</p>
                         </div>
-                      )}
-                    </div>
-                    <div className="px-6 py-4">
-                      <p className="font-bold text-gray-900 mb-1 truncate">{b.title}</p>
-                      <p className="text-xs text-gray-500 mb-3">{b.date}</p>
-                      <div className="flex gap-2">
-                        <a href={b.url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
-                          미리보기
-                        </a>
-                        <a href={b.url} download={b.filename} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-[#2d6a4f] text-white rounded-lg font-medium hover:bg-[#1b4332] transition-colors">
-                          <span className="w-4 h-4">{Icons.download}</span>다운로드
-                        </a>
+                        <div className="flex gap-2 shrink-0">
+                          <a href={b.url} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                            미리보기
+                          </a>
+                          <a href={b.url} download={b.filename} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-[#2d6a4f] text-white rounded-lg font-medium hover:bg-[#1b4332] transition-colors">
+                            <span className="w-4 h-4">{Icons.download}</span>다운로드
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
