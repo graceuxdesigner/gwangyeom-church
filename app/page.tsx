@@ -318,7 +318,7 @@ export default function Home() {
                   alt="담임목사 온성진"
                   fill
                   sizes="80px"
-                  className="object-cover object-[center_18%] scale-[1.4]"
+                  className="object-cover object-[center_35%] scale-[1.8]"
                 />
               </div>
               <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-2">담임목사</p>
