@@ -311,20 +311,18 @@ export default function Home() {
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
-              <div className="aspect-square relative bg-gray-100">
+            <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-gray-100 ring-2 ring-[#b7e4c7] relative">
                 <Image
                   src="/images/pastor.jpg"
                   alt="담임목사 온성진"
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-[center_22%]"
+                  sizes="80px"
+                  className="object-cover object-[center_18%] scale-[1.4]"
                 />
               </div>
-              <div className="p-6 text-center">
-                <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-2">담임목사</p>
-                <p className="text-2xl font-bold text-gray-900">온성진</p>
-              </div>
+              <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-2">담임목사</p>
+              <p className="text-2xl font-bold text-gray-900">온성진</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 hover:border-[#b7e4c7] hover:shadow-md transition-all self-start">
               <p className="text-[#40916c] text-xs font-bold tracking-widest uppercase mb-3">시무장로</p>
