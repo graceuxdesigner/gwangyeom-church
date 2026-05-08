@@ -271,14 +271,33 @@ function BulletinManager({ initial }: { initial: Bulletin[] }) {
   async function upload(e: React.FormEvent) {
     e.preventDefault();
     if (files.length === 0 || !date || !title) return;
+
+    // pre-flight size check (Vercel Hobby plan body limit ≈ 4.5MB)
+    const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+    if (totalBytes > 4 * 1024 * 1024) {
+      const mb = (totalBytes / 1024 / 1024).toFixed(1);
+      setMsg(`⚠️ 업로드 실패: 파일 합계 ${mb}MB — 한 번에 4MB 이하만 가능합니다. 파일을 압축하거나 한 장씩 나눠 업로드해주세요.`);
+      return;
+    }
+
     setBusy(true);
     setMsg("");
     const fd = new FormData();
     files.forEach((f) => fd.append("file", f));
     fd.append("date", date);
     fd.append("title", title);
-    const r = await fetch("/api/admin/upload-bulletin", { method: "POST", body: fd });
+
+    let r: Response;
+    try {
+      r = await fetch("/api/admin/upload-bulletin", { method: "POST", body: fd });
+    } catch (err) {
+      setBusy(false);
+      const m = err instanceof Error ? err.message : "network error";
+      setMsg(`⚠️ 업로드 실패 (네트워크): ${m}`);
+      return;
+    }
     setBusy(false);
+
     if (r.ok) {
       const j = await r.json();
       setItems([...j.items, ...items]);
@@ -286,8 +305,16 @@ function BulletinManager({ initial }: { initial: Bulletin[] }) {
       (document.getElementById("bulletin-file") as HTMLInputElement).value = "";
       setMsg(`✅ ${j.items.length}개 업로드 완료. ${rebuildNote(j.rebuild)}`);
     } else {
-      const j = await r.json().catch(() => ({}));
-      setMsg(`⚠️ 업로드 실패: ${j.error ?? "unknown"}`);
+      let detail = "";
+      try {
+        const j = await r.json();
+        detail = j.error ?? "";
+      } catch {
+        const t = await r.text().catch(() => "");
+        detail = t.slice(0, 200);
+      }
+      const hint = r.status === 413 ? " (파일 크기 초과 — 4MB 이하로 줄여주세요)" : r.status === 401 ? " (로그인 만료 — 새로고침 후 재로그인)" : "";
+      setMsg(`⚠️ 업로드 실패 [HTTP ${r.status}]${hint}${detail ? `: ${detail}` : ""}`);
     }
   }
 
@@ -329,13 +356,34 @@ function BulletinManager({ initial }: { initial: Bulletin[] }) {
             )}
           </label>
         </form>
-        <button
-          onClick={(e) => upload(e as unknown as React.FormEvent)}
-          disabled={busy || files.length === 0 || !date || !title}
-          className="mt-3 bg-[#2d6a4f] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1b4332] disabled:opacity-50 transition-colors"
-        >
-          {busy ? "업로드 중..." : `📤 ${files.length || ""}개 업로드`}
-        </button>
+        {(() => {
+          const missing: string[] = [];
+          if (!date) missing.push("날짜");
+          if (!title) missing.push("제목");
+          if (files.length === 0) missing.push("파일");
+          const ready = missing.length === 0;
+          return (
+            <div className="mt-3 flex items-center gap-3 flex-wrap">
+              <button
+                onClick={(e) => {
+                  if (files.length === 0) {
+                    (document.getElementById("bulletin-file") as HTMLInputElement | null)?.click();
+                    return;
+                  }
+                  if (!ready) {
+                    setMsg(`⚠️ 다음 항목을 먼저 입력해주세요: ${missing.join(", ")}`);
+                    return;
+                  }
+                  upload(e as unknown as React.FormEvent);
+                }}
+                disabled={busy}
+                className="bg-[#2d6a4f] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1b4332] disabled:opacity-60 transition-colors cursor-pointer"
+              >
+                {busy ? "업로드 중..." : files.length > 0 ? `📤 ${files.length}개 업로드` : "📁 파일 선택"}
+              </button>
+            </div>
+          );
+        })()}
         {msg && <p className={`text-sm mt-3 ${msg.startsWith("✅") ? "text-[#2d6a4f]" : "text-red-600"}`}>{msg}</p>}
       </Section>
 

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { SiteContent, Bulletin } from "@/lib/content";
+import { toDisplayDate, toWeekLabel } from "@/lib/format";
 
 const NAV_ITEMS = [
   { label: "교회소개", href: "#about" },
@@ -59,17 +61,28 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Group latest bulletins: take all items sharing the same date as the most recent upload,
-  // sort by id ascending so page 1 (앞) is first, page 2 (뒤) follows.
-  const latestBulletin = bulletins[0];
-  const latestSet = latestBulletin
-    ? bulletins
-        .filter((b) => b.date === latestBulletin.date)
-        .sort((a, b) => a.id.localeCompare(b.id))
-    : [];
+  // Group bulletins by normalized date (digits only) so "2026.05.03" and "20260503" merge.
+  const bulletinGroups = (() => {
+    const norm = (d: string) => d.replace(/[^0-9]/g, "");
+    const map = new Map<string, Bulletin[]>();
+    for (const b of bulletins) {
+      const key = norm(b.date);
+      const arr = map.get(key) ?? [];
+      arr.push(b);
+      map.set(key, arr);
+    }
+    for (const arr of map.values()) arr.sort((a, b) => a.id.localeCompare(b.id));
+    return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
+  })();
+  const [viewIdx, setViewIdx] = useState(0);
+  const currentGroup = bulletinGroups[viewIdx];
+  const currentSet = currentGroup?.[1] ?? [];
+  const isLatest = viewIdx === 0;
+  const hasPrev = viewIdx < bulletinGroups.length - 1;
+  const hasNext = viewIdx > 0;
 
-  function downloadAll() {
-    latestSet.forEach((b, i) => {
+  function downloadFiles(items: Bulletin[]) {
+    items.forEach((b, i) => {
       setTimeout(() => {
         const a = document.createElement("a");
         a.href = b.url;
@@ -80,6 +93,7 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
       }, i * 250);
     });
   }
+  const downloadAll = () => downloadFiles(currentSet);
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
@@ -277,32 +291,78 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#40916c] text-xs font-bold tracking-[0.2em] uppercase mb-3">Bulletin</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">이번 주 주보</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{isLatest ? "이번 주 주보" : "이전 주보"}</h2>
             <div className="w-12 h-1 bg-[#40916c] mx-auto mt-5" />
-            {latestBulletin && <p className="text-sm text-gray-500 mt-4">{latestBulletin.date}</p>}
+            {currentSet[0] && (
+              <p className="text-sm text-gray-500 mt-4">
+                <span className="text-[#2d6a4f] font-bold">{toWeekLabel(currentSet[0].date)}</span>
+                <span className="mx-2 text-gray-300">|</span>
+                {toDisplayDate(currentSet[0].date)}
+              </p>
+            )}
           </div>
-          {latestSet.length === 0 ? (
+
+          {/* Top action bar: list + previous/next week */}
+          {bulletinGroups.length > 0 && (
+            <div className="max-w-3xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {hasPrev && (
+                  <button
+                    onClick={() => setViewIdx(viewIdx + 1)}
+                    className="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors"
+                  >
+                    ← 이전주 ({toWeekLabel(bulletinGroups[viewIdx + 1][0])})
+                  </button>
+                )}
+                {hasNext && (
+                  <button
+                    onClick={() => setViewIdx(viewIdx - 1)}
+                    className="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#2d6a4f] hover:text-[#2d6a4f] transition-colors"
+                  >
+                    다음주 ({toWeekLabel(bulletinGroups[viewIdx - 1][0])}) →
+                  </button>
+                )}
+                {!isLatest && (
+                  <button
+                    onClick={() => setViewIdx(0)}
+                    className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#2d6a4f] font-medium px-2"
+                  >
+                    ↻ 최신으로
+                  </button>
+                )}
+              </div>
+              <Link
+                href="/bulletins"
+                className="inline-flex items-center gap-2 bg-white border border-[#2d6a4f] text-[#2d6a4f] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#2d6a4f] hover:text-white transition-colors"
+              >
+                <span className="w-4 h-4">{Icons.bulletin}</span>
+                주보 목록 보기
+              </Link>
+            </div>
+          )}
+
+          {currentSet.length === 0 ? (
             <div className="max-w-2xl mx-auto bg-white rounded-xl border border-gray-100 p-12 text-center">
               <div className="w-12 h-12 mx-auto mb-3 text-gray-300">{Icons.bulletin}</div>
               <p className="text-gray-500">아직 등록된 주보가 없습니다.</p>
             </div>
           ) : (
             <div className="max-w-3xl mx-auto">
-              {latestSet.length > 1 && (
+              {currentSet.length > 1 && (
                 <div className="flex justify-end mb-4">
                   <button
                     onClick={downloadAll}
                     className="inline-flex items-center gap-2 bg-[#2d6a4f] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1b4332] transition-colors"
                   >
                     <span className="w-4 h-4">{Icons.download}</span>
-                    전체 다운로드 ({latestSet.length}장)
+                    전체 다운로드 ({currentSet.length}장)
                   </button>
                 </div>
               )}
               <div className="space-y-6">
-                {latestSet.map((b, i) => {
+                {currentSet.map((b, i) => {
                   const isImage = /\.(jpe?g|png|webp)$/i.test(b.filename);
-                  const sideLabel = latestSet.length > 1 ? (i === 0 ? "앞면" : i === 1 ? "뒷면" : `${i + 1}장`) : null;
+                  const sideLabel = currentSet.length > 1 ? (i === 0 ? "앞면" : i === 1 ? "뒷면" : `${i + 1}장`) : null;
                   return (
                     <div key={b.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all">
                       {/* A4 가로비 (297:210) */}
@@ -338,6 +398,7 @@ export default function HomeView({ content, videoId, bulletins }: Props) {
               </div>
             </div>
           )}
+
         </div>
       </section>
 

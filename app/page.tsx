@@ -2,7 +2,7 @@ import HomeView from "./home-view";
 import { siteContent, bulletinsList } from "@/lib/content";
 import { fetchLatestWorshipVideo } from "@/lib/youtube";
 
-export const revalidate = 3600;
+export const revalidate = 600;
 
 export default async function Home() {
   const latest = await fetchLatestWorshipVideo(siteContent.media.video_id);

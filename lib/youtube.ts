@@ -3,23 +3,35 @@ const RSS = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
 export type LatestVideo = { id: string; title: string; published: string };
 
-// Fetch latest video whose title contains "예배"
+// Fetch the channel's most recent video (no keyword filter).
+// Tries XML feed → r.jina.ai proxy as fallback (avoids rate limits / region blocks).
 export async function fetchLatestWorshipVideo(fallbackId: string): Promise<LatestVideo> {
-  try {
-    const res = await fetch(RSS, { next: { revalidate: 3600 } });
-    if (!res.ok) throw new Error("fetch failed");
-    const xml = await res.text();
-    const entries = xml.split("<entry>").slice(1);
-    for (const entry of entries) {
-      const id = entry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1];
-      const title = entry.match(/<title>([^<]+)<\/title>/)?.[1];
-      const published = entry.match(/<published>([^<]+)<\/published>/)?.[1];
-      if (id && title && title.includes("예배")) {
-        return { id, title, published: published ?? "" };
-      }
+  const sources = [
+    RSS,
+    `https://r.jina.ai/${RSS}`,
+  ];
+  for (const url of sources) {
+    try {
+      const res = await fetch(url, {
+        next: { revalidate: 600 },
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+          "Accept": "application/atom+xml,application/xml,text/xml,*/*",
+        },
+      });
+      if (!res.ok) continue;
+      const text = await res.text();
+      const firstEntry = text.split("<entry>")[1];
+      if (!firstEntry) continue;
+      const id = firstEntry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1];
+      const title = firstEntry.match(/<title>([^<]+)<\/title>/)?.[1];
+      const published = firstEntry.match(/<published>([^<]+)<\/published>/)?.[1];
+      if (!id) continue;
+      return { id, title: title ?? "", published: published ?? "" };
+    } catch {
+      continue;
     }
-    throw new Error("no matching video");
-  } catch {
-    return { id: fallbackId, title: "", published: "" };
   }
+  return { id: fallbackId, title: "", published: "" };
 }
