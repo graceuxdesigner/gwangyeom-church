@@ -15,14 +15,6 @@
       "filename": "test_4w_front.pdf",
       "url": "/bulletins/test_4w_front.pdf",
       "uploaded_at": "2026-04-27T07:00:00.000Z"
-    },
-    {
-      "id": "test_4w_back.pdf",
-      "date": "20260427",
-      "title": "4월 4주차 주보 (뒷면)",
-      "filename": "test_4w_back.pdf",
-      "url": "/bulletins/test_4w_back.pdf",
-      "uploaded_at": "2026-04-27T07:01:00.000Z"
     }
   ]
 }
